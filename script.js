@@ -1,21 +1,14 @@
-/*
-Declare a computerPlay function representing the computer that randomly returns 'rock','paper', or 'scissors'
-    Declare a computerChoice array of strings within the function containing 'rock', 'paper', and 'scissors
-    Return a random string from the array using Math.floor(Math.random()*computerSelection.length)
-*/
+// Global variables to keep track of the score
+let userScore = 0;
+let computerScore = 0;
 
+// Randomize computer's selection of rock/paper/scissors
 function computerPlay(){
     let computerChoice = ['rock','paper','scissors'];
     return computerChoice[Math.floor(Math.random()*computerChoice.length)];
 }
 
-/*
-Declare a playRound function that takes two parameters: computerSelection & userSelection
-    Take both arguments and capitalize only the first letter
-    Declare an if/if else/... beginning with a tie condition and following with each win/loss scenario for the player,
-    returning the appropriate message based on a tie/win/loss.
-*/
-
+// Determine a winner based on user & computer input
 function playRound(userSelection,computerSelection){
 
     userSelection = userSelection.charAt(0).toUpperCase()+userSelection.toLowerCase().slice(1);
@@ -40,46 +33,65 @@ function playRound(userSelection,computerSelection){
     
 }
 
-/*
-Declare a game function that plays 5 rounds of rock,paper,scissors and reports a winner/loser at the end with a score
-    Declare two local variables within game function to keep score, userScore & computerScore
-    Declare a for statement going through 5 iterations of the playRound function, updating the score within each iteration
-        Declare a local variable, userInput, within the for statement to take the user's selection
-        Declare a local variable, outcome, that executes playRound, taking variable userInput and function computerPlay as 
-        respective parameters. 
-        Print outcome to the user.
-        Declare an if/if else statement that updates & prints score based on if outcome variable contains keyword 'win',
-        'lose', or 'tie'
-    Return the winner of the 5 round game based on who has the higher score
-*/
+// create round element to print each round's outcome to user
+const round = document.createElement('p');
+const greeting = document.getElementById('greeting');
+round.textContent = '';
+greeting.appendChild(round);
 
-function game(){
-    let userScore = 0;
-    let computerScore = 0;
+// create score element to print updated score to user
+const score = document.createElement('p');
+score.textContent = '';
+greeting.appendChild(score);
 
-    for(counter=0;counter<5;counter++){
+// define restartButton element and hide for the end of each game
+const restartButton = document.getElementById('restartButton');
+restartButton.style.display='none';
 
-        let userInput = prompt("Please enter your choice (rock/paper/scissors):");
+// simulate each round after every user selection, restarting each game at 5
+const btn = document.querySelector('.buttons');
+btn.addEventListener('click', function(e){
 
-        let outcome = playRound(userInput,computerPlay());
+    let outcome = playRound(e.target.getAttribute('id'),computerPlay());
 
-        console.log(outcome);
+    updateScore(outcome); // update score and print to user
+    score.textContent = "User: "+userScore+" Computer: "+computerScore;
 
-        if(outcome.indexOf("Win") > -1){
-            userScore++;
-            console.log("User: "+userScore+" Computer: "+computerScore);
-        } else if (outcome.indexOf("Lose") > -1){
-            computerScore++;
-            console.log("User: "+userScore+" Computer: "+computerScore);
-        }
-    }
+    if(userScore==5){
+        round.textContent = 'Congrats! You Won!' // declare winner
 
-    if(userScore==computerScore){
-        console.log("It's a tie! \n User: "+userScore+" Computer: "+computerScore);
-    } else if (userScore>computerScore){
-        console.log("Congrats, you won! \n User: "+userScore+" Computer: "+computerScore);
+        btn.style.display='none'; // hide play buttons & show restart button
+        restartButton.style.display='';
+
+    } else if(computerScore==5) {
+        round.textContent = 'Sorry, You Lost!' // declare loser
+
+        btn.style.display='none'; // hide play buttons & show restart button
+        restartButton.style.display='';
+
     } else {
-        console.log("Sorry, you lost! \n User: "+userScore+" Computer: "+computerScore);
+        round.textContent = outcome; // print outcome of the round 
+    }
+});
+
+// hide restart button, reset score, and provide play buttons
+restartButton.addEventListener('click', function(){
+    btn.style.display='';
+    restartButton.style.display = 'none';
+
+    userScore=0;
+    computerScore=0;
+
+    round.textContent = '';
+    score.textContent = "User: "+userScore+" Computer: "+computerScore;
+});
+
+function updateScore(outcome){
+    if(outcome.indexOf("Win") > -1){
+        userScore++;
+    } else if (outcome.indexOf("Lose") > -1){
+        computerScore++;
+    } else {
     }
 }
     
